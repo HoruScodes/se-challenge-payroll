@@ -13,6 +13,8 @@ const upload = multer({
   },
 });
 
+let fileUploadHistory = [];
+
 let createQuery = `CREATE TABLE IF NOT EXISTS payroll(
     id integer PRIMARY KEY,
     date text NOT NULL,
@@ -74,12 +76,17 @@ app.get("/", (req, res) => {
 
 app.post("/add", upload.single("upload-single"), (req, res) => {
   if (req.file) {
-    let csvString = req.file.buffer.toString();
-    csv({ noheader: false, output: "csv" })
-      .fromString(csvString)
-      .then((csvRow) => {
-        processData(csvRow, res);
-      });
+    if (fileUploadHistory.indexOf(req.file.originalname) > -1) {
+      res.status(404).send("Already Uploaded");
+    } else {
+      fileUploadHistory.push(req.file.originalname);
+      let csvString = req.file.buffer.toString();
+      csv({ noheader: false, output: "csv" })
+        .fromString(csvString)
+        .then((csvRow) => {
+          processData(csvRow, res);
+        });
+    }
   }
 });
 
@@ -87,12 +94,9 @@ let processData = (csvData, res) => {
   // Connect to or create database
   let db = createOrConnectPayrollDatabase();
 
-  // Serialize database actions so they run in order
   db.serialize(() => {
-    // Create table it if does not exist yet
     createTableIfNotExist(db);
 
-    // Insert the data from the csv file into the database
     csvData.forEach((row) => {
       db.run(insertQuery, row, (error) => {
         if (error) {
@@ -101,12 +105,11 @@ let processData = (csvData, res) => {
       });
     });
 
-    // Query the data back from the database, retreiving only the same number of rows as most recent upload/insert
-    db.all(selectQuery + csvData.length, [], (error, dataRows) => {
+    db.all(selectQuery, [], (error) => {
       if (error) {
         return console.log(error.message);
       }
-      res.send("Created Successfully");
+      res.status(200).send("Created Successfully");
     });
   });
 
@@ -119,9 +122,11 @@ app.listen(3000, () => {
 
 const sendPayrollData = async (data) => {
   const employeeData = [];
+
   data.forEach((row, index) => {
     const { payPeriod } = getPayPeriod(row.date);
     let indexOfMatch = -1;
+
     const employee = employeeData.find((employee) => {
       return (
         employee?.employeeId === row.employee_id &&
