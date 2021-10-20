@@ -72,47 +72,47 @@ We've agreed to build an API with the following endpoints to serve HTTP requests
 
 As an example, given the upload of a sample file with the following data:
 
-   | date       | hours worked | employee id | job group |
-   | ---------- | ------------ | ----------- | --------- |
-   | 2020-01-04 | 10           | 1           | A         |
-   | 2020-01-14 | 5            | 1           | A         |
-   | 2020-01-20 | 3            | 2           | B         |
-   | 2020-01-20 | 4            | 1           | A         |
+| date       | hours worked | employee id | job group |
+| ---------- | ------------ | ----------- | --------- |
+| 2020-01-04 | 10           | 1           | A         |
+| 2020-01-14 | 5            | 1           | A         |
+| 2020-01-20 | 3            | 2           | B         |
+| 2020-01-20 | 4            | 1           | A         |
 
 A request to the report endpoint should return the following JSON response:
 
-   ```json
-   {
-     "payrollReport": {
-       "employeeReports": [
-         {
-           "employeeId": "1",
-           "payPeriod": {
-             "startDate": "2020-01-01",
-             "endDate": "2020-01-15"
-           },
-           "amountPaid": "$300.00"
-         },
-         {
-           "employeeId": "1",
-           "payPeriod": {
-             "startDate": "2020-01-16",
-             "endDate": "2020-01-31"
-           },
-           "amountPaid": "$80.00"
-         },
-         {
-           "employeeId": "2",
-           "payPeriod": {
-             "startDate": "2020-01-16",
-             "endDate": "2020-01-31"
-           },
-           "amountPaid": "$90.00"
-         }
-       ]
-     }
-   }
-   ```
+```json
+{
+  "payrollReport": {
+    "employeeReports": [
+      {
+        "employeeId": "1",
+        "payPeriod": {
+          "startDate": "2020-01-01",
+          "endDate": "2020-01-15"
+        },
+        "amountPaid": "$300.00"
+      },
+      {
+        "employeeId": "1",
+        "payPeriod": {
+          "startDate": "2020-01-16",
+          "endDate": "2020-01-31"
+        },
+        "amountPaid": "$80.00"
+      },
+      {
+        "employeeId": "2",
+        "payPeriod": {
+          "startDate": "2020-01-16",
+          "endDate": "2020-01-31"
+        },
+        "amountPaid": "$90.00"
+      }
+    ]
+  }
+}
+```
 
 We consider ourselves to be language agnostic here at Wave, so feel free to use any combination of technologies you see fit to both meet the requirements and showcase your skills. We only ask that your submission:
 
@@ -125,10 +125,21 @@ We consider ourselves to be language agnostic here at Wave, so feel free to use 
 Please commit the following to this `README.md`:
 
 1. Instructions on how to build/run your application
-1. Answers to the following questions:
+   -npm install && npm run dev
+
+2. Answers to the following questions:
+
    - How did you test that your implementation was correct?
+   - i have tested as many test cases i could such as editing the csv file to add null values and checking if it still works.
+   - i have uploaded same file twice to check if it inserts data into db
+   - i have uploaded empty file
+
    - If this application was destined for a production environment, what would you add or change?
+     -i would definately change the database from sqlite3 to something that scales to higher levels or simply use Baas(Backend as a Service)
+
    - What compromises did you have to make as a result of the time constraints of this challenge?
+     -i dont know unit testing libraries such as mocha but i would have definitely use unit testing
+     -did not used database that scales at higher levels such as Amazons DynamoDB(although i never used it but i will try in the next iteration)
 
 ## Submission Instructions
 

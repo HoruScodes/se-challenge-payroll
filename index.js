@@ -37,11 +37,15 @@ app.post("/add", upload.single("upload-single"), (req, res) => {
     if (fileUploadHistory.indexOf(req.file.originalname) > -1) {
       res.status(404).send("Already Uploaded");
     } else {
-      fileUploadHistory.push(req.file.originalname);
       let csvString = req.file.buffer.toString();
       csv({ noheader: false, output: "csv" })
         .fromString(csvString)
         .then((csvRow) => {
+          if (csvRow.length === 0) {
+            res.status(404).send("Empty File");
+            return;
+          }
+          fileUploadHistory.push(req.file.originalname);
           insertDataIntoTable(csvRow, res);
         });
     }
