@@ -4,6 +4,10 @@ const csv = require("csvtojson");
 const multer = require("multer");
 const bodyParser = require("body-parser");
 
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
+
 const {
   insertDataIntoTable,
   selectAndSendPayrollData,
@@ -46,7 +50,7 @@ app.post("/add", upload.single("upload-single"), (req, res) => {
             return;
           }
           fileUploadHistory.push(req.file.originalname);
-          insertDataIntoTable(csvRow, res);
+          insertDataIntoTable(csvRow, res, prisma);
         });
     }
   }
